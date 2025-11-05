@@ -1,6 +1,6 @@
 # Multi-Tenant Architecture - Data Isolation Guide
 
-## Current Multi-Tenant Support ✅
+## Current Multi-Tenant Support 
 
 ### Lab-Based Tenancy
 - **Labs** act as tenants (isolated environments)
@@ -20,10 +20,10 @@
                   └──────────────────┘
 ```
 
-## ⚠️ DATA ISOLATION - IMPLEMENTATION NEEDED
+##  DATA ISOLATION - IMPLEMENTATION NEEDED
 
 ### Critical Issue
-**Your current system does NOT isolate data by lab!**
+** current system does NOT isolate data by lab!**
 
 When you add lab-specific data (e.g., patients, tests, records), you need to:
 1. Add `lab_id` foreign key to ALL lab-specific tables
@@ -200,14 +200,14 @@ def lab_data_view(request, lab_id):
 - [x] Lab admin decorator
 - [x] System admin bypass
 
-### ⚠️ MUST Implement for Data Isolation
+###  MUST Implement for Data Isolation
 - [ ] **Add `lab_id` to ALL lab-specific tables**
 - [ ] **Always filter queries by lab_id**
 - [ ] **Validate lab access in all endpoints**
 - [ ] **Use tenant context middleware**
 - [ ] **Prevent cross-lab data leakage**
 
-### 🔒 Security Rules
+###  Security Rules
 
 **CRITICAL: For every lab-specific resource:**
 
@@ -226,28 +226,28 @@ def lab_data_view(request, lab_id):
 
 2. **Query Level**
    ```python
-   # ❌ WRONG - No lab filtering
+   #  WRONG - No lab filtering
    patients = Patient.query.all()
    
-   # ✅ CORRECT - Always filter by lab
+   #  CORRECT - Always filter by lab
    patients = Patient.query.filter_by(lab_id=current_lab_id).all()
    ```
 
 3. **API Level**
    ```python
-   # ❌ WRONG - No access check
+   #  WRONG - No access check
    @app.route('/patients/<int:patient_id>')
    def get_patient(patient_id):
        patient = Patient.query.get(patient_id)
        return jsonify(patient)
    
-   # ✅ CORRECT - Verify lab access
+   #  CORRECT - Verify lab access
    @app.route('/labs/<int:lab_id>/patients/<int:patient_id>')
    @require_lab_access
    def get_patient(lab_id, patient_id):
        patient = Patient.query.filter_by(
            id=patient_id,
-           lab_id=lab_id  # ✅ Ensure patient belongs to this lab
+           lab_id=lab_id  #  Ensure patient belongs to this lab
        ).first_or_404()
        return jsonify(patient)
    ```
@@ -304,7 +304,7 @@ def create_patient(lab_id):
     
     # CRITICAL: Force lab_id from URL, not from request body
     patient = Patient(
-        lab_id=lab_id,  # ✅ Use URL parameter, not user input
+        lab_id=lab_id,  #  Use URL parameter, not user input
         first_name=data['first_name'],
         last_name=data['last_name']
     )
@@ -382,10 +382,10 @@ patients = Patient.query.filter_by(lab_id=lab_id).all()
 
 ## Summary
 
-Your UMS **has the foundation** for multi-tenancy:
-- ✅ Lab entities
-- ✅ User-lab memberships
-- ✅ Role-based access
+This UMS **has the foundation** for multi-tenancy:
+-  Lab entities
+-  User-lab memberships
+-  Role-based access
 
 But **DOES NOT have data isolation** yet. You need to:
 1. Add `lab_id` to all lab-specific models
@@ -393,4 +393,3 @@ But **DOES NOT have data isolation** yet. You need to:
 3. Use `@require_lab_access` decorator
 4. Validate lab access in every endpoint
 
-**Bottom line:** You have multi-tenancy **structure** but not **enforcement**. Add the data isolation layer before deploying!
