@@ -262,4 +262,3 @@ The UMS is fully functional and ready for integration with your Django webapp po
 
 ---
 
-**You're all set!** 🎉 Start the server and begin integrating with your Django webapp portal.
