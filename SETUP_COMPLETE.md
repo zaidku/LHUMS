@@ -1,4 +1,4 @@
-# Flask User Management Service (UMS) - Setup Complete! 🎉
+# User Management Service (UMS) 
 
 ## What Has Been Created
 
