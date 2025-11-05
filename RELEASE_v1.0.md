@@ -193,4 +193,4 @@ Your Flask User Management Service v1.0 is now live on GitHub!
 
 ---
 
-Made with ❤️ for LinksHub Django Portal
+**Made for LinksHub Portal**
