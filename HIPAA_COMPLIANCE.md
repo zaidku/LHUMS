@@ -279,6 +279,6 @@ curl -X POST http://localhost:5000/api/users/5/unlock \
 
 ---
 
-**Your UMS is HIPAA-compliant for password management! ✅**
+** UMS is HIPAA-compliant for password management! ✅**
 
 All required password rotation, history, and auditing features are implemented.
