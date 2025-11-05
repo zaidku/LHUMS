@@ -111,7 +111,7 @@ All password-related activities are logged:
 
 ##  Email Notifications (HIPAA §164.530(i))
 
-### Security Notifications ✅
+### Security Notifications 
 Users receive email notifications for:
 - Password changed successfully
 - Password reset requested
@@ -270,7 +270,7 @@ curl -X POST http://localhost:5000/api/users/5/unlock \
    - Require uppercase, lowercase, numbers, special chars
    - Block common passwords
 
-## 📖 HIPAA References
+##  HIPAA References
 
 - **§164.308(a)(5)(ii)(D)** - Password Management
 - **§164.308(a)(1)(ii)(D)** - Information System Activity Review
