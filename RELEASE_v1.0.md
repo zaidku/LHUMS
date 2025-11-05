@@ -1,12 +1,12 @@
 # UMS v1.3!
 
-## ✅ Repository
+##  Repository
 **GitHub**: https://github.com/zaidku/LHUMS
-**Version**: 1.0
-**Tag**: v1.0
-**Released**: November 5, 2025
+**Version**: 1.3
+**Tag**: v1.3
+**Released**: November 1, 2025
 
-## 📦 What's Included
+##  What's Included
 
 ### Core Features
 ✅ **JWT-based Authentication** - Secure access & refresh tokens
@@ -65,7 +65,7 @@
 - Login attempt tracking
 ```
 
-## 📊 Statistics
+##  Statistics
 
 - **Total Files**: 37
 - **Lines of Code**: 5,630+
@@ -75,7 +75,7 @@
 - **Email Types**: 7 notifications
 - **Test Files**: 1 (comprehensive data isolation tests)
 
-## 🚀 Quick Start
+##  Quick Start
 
 ```bash
 # Clone the repository
@@ -95,7 +95,7 @@ python init_db.py create-admin
 python run.py
 ```
 
-## 📝 Database Schema
+##  Database Schema
 
 7 Tables:
 1. **users** - User accounts with HIPAA fields
