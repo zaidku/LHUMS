@@ -119,7 +119,7 @@ Users receive email notifications for:
 - Forced password change by admin
 - Password expiring soon (optional)
 
-## 📋 HIPAA Password Requirements Checklist
+##  HIPAA Password Requirements Checklist
 
 | Requirement | Status | Implementation |
 |-------------|--------|----------------|
