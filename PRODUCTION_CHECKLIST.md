@@ -452,4 +452,4 @@ gunicorn -w 4 -b 0.0.0.0:5000 run:app
 
 ---
 
-**Bottom Line**: The code is production-quality, but the **configuration** needs work. You have a solid foundation that needs proper deployment setup.
+**configuration** needs work. a good solid foundation that needs proper deployment setup.

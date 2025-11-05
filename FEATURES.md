@@ -68,9 +68,9 @@
      ┌───────────────────────────────────────────────┐
      │         PostgreSQL Database Cluster           │
      │  ┌──────────────┐      ┌──────────────┐       │
-     │  │   Primary    │─────▶│   Replica    │      │
-     │  │  (Write/Read)│      │  (Read Only) │      │
-     │  └──────────────┘      └──────────────┘      │
+     │  │   Primary    │─────▶│   Replica    │       │
+     │  │  (Write/Read)│      │  (Read Only) │       │
+     │  └──────────────┘      └──────────────┘       │
      │                                               │
      │  7 Core Tables + Indexes                      │
      │  - users (indexed: username, email)           │
@@ -89,17 +89,17 @@
 User/Client          UMS API          Auth Layer       DB Layer         Audit Service
   │                  │                  │               │                   │
   │  POST /login     │                  │               │                   │
-  ├─────────────────▶│                  │               │                   │
+  │ ──────────────▶ │                  │                │                   │
   │  {username,pwd}  │                  │               │                   │
   │                  │                  │               │                   │
   │                  │ Validate Input   │               │                   │
-  │                  ├─────────────────▶│               │                   │
+  │                  ├────────────────▶│               │                   │
   │                  │                  │               │                   │
   │                  │                  │ Query User    │                   │
-  │                  │                  ├──────────────▶│                   │
+  │                  │                  ├─────────────▶│                   │
   │                  │                  │               │                   │
   │                  │                  │ User Record   │                   │
-  │                  │                  │◀──────────────┤                   │
+  │                  │                  │◀─────────────┤                   │
   │                  │                  │               │                   │
   │                  │ Check Password   │               │                   │
   │                  │ Verify Hash      │               │                   │
@@ -108,7 +108,7 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
   │                  │                  │               │                   │
   │                  │                  │ Record Login  │                   │
   │                  │                  │ Attempt       │                   │
-  │                  │                  ├──────────────▶│                   │
+  │                  │                  ├─────────────▶│                   │
   │                  │                  │               │                   │
   │                  │ Generate JWT     │               │                   │
   │                  │ (access+refresh) │               │                   │
@@ -117,10 +117,10 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
   │                  │                  │               │ {action: login,   │
   │                  │                  │               │  user_id,         │
   │                  │                  │               │  ip, timestamp}   │
-  │                  │                  ├───────────────┼──────────────────▶│
+  │                  │                  ├───────────────┼─────────────────▶│
   │                  │                  │               │                   │
   │  JWT Tokens      │                  │               │                   │
-  │◀─────────────────┤                  │               │                   │
+  │◀────────────────┤                  │               │                   │
   │  {access,        │                  │               │                   │
   │   refresh,       │                  │               │                   │
   │   user{labs[]}}  │                  │               │                   │
@@ -128,12 +128,12 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
   │                  │                  │               │                   │
   │  GET /labs/5/    │                  │               │                   │
   │  patients        │                  │               │                   │
-  ├─────────────────▶│                  │               │                   │
+  ├───────────────▶│                   │               │                   │
   │  Auth: Bearer    │                  │               │                   │
   │  <jwt>           │                  │               │                   │
   │                  │                  │               │                   │
   │                  │ Verify JWT       │               │                   │
-  │                  ├─────────────────▶│               │                   │
+  │                  ├────────────────▶│               │                   │
   │                  │                  │               │                   │
   │                  │ JWT Valid        │               │                   │
   │                  │ Extract user_id  │               │                   │
@@ -200,30 +200,30 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
 - Network: < 10Mbps average
 - Database connections: 5-20 active queries
 
-## ✅ Complete Feature List
+##  Complete Feature List
 
 ### Authentication & Security
 
-#### ✅ User Registration & Login
+####  User Registration & Login
 - User registration with validation
 - Login with JWT tokens (access + refresh)
 - Token refresh mechanism
 - Logout support (client-side)
 
-#### ✅ Password Management
+####  Password Management
 - **Forgot Password** - Request password reset via email
 - **Reset Password** - Reset password using email token
 - **Change Password** - Change password when logged in
 - Password hashing (Werkzeug PBKDF2)
 - Password strength validation (minimum 6 characters)
 
-#### ✅ Email Management
+####  Email Management
 - **Change Email** - Request email change with verification
 - **Email Verification** - Verify new email via token
 - Email uniqueness validation
 - Email format validation
 
-#### ✅ Account Security
+####  Account Security
 - **Account Lockout** - Automatic lockout after 5 failed login attempts
 - **Auto-unlock** - Accounts unlock after 30 minutes or via password reset
 - **Login Attempt Tracking** - Track all login attempts with IP and timestamp
@@ -235,7 +235,7 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
 
 ### Advanced Security & Threat Detection
 
-#### ✅ Brute Force Protection
+####  Brute Force Protection
 **Multi-Layer Defense:**
 - **Account-Level Lockout:** 5 failed attempts = 30-minute lockout
 - **IP-Level Rate Limiting:** 20 failed attempts from same IP = 1-hour block
@@ -247,7 +247,7 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
 - Automated alerts when threshold exceeded
 - Real-time dashboard for security team
 
-#### ✅ Anomaly Detection Engine
+####  Anomaly Detection Engine
 **Behavioral Analysis:**
 - **Impossible Travel Detection:** Login from New York then Tokyo within 1 hour = flag + email alert
 - **Device Fingerprinting:** Browser, OS, screen resolution tracking
@@ -265,7 +265,7 @@ User/Client          UMS API          Auth Layer       DB Layer         Audit Se
 - Anomaly rules: Framework ready (add rule engine)
 - ML-based detection: Future enhancement (scikit-learn integration)
 
-#### ✅ Security Event Scoring
+####  Security Event Scoring
 **Risk Score Calculation (0-100):**
 ```
 Base Risk = 0
@@ -285,7 +285,7 @@ Score > 90: Temporary block + admin alert
 - Medium risk (31-70): Email notification + audit log
 - High risk (71-100): Block + require verification + admin notification
 
-#### ✅ Compliance & Audit
+####  Compliance & Audit
 **Security Standards:**
 - **HIPAA:** Password policies, audit trails, access controls
 - **SOC 2:** Audit logging, access management, encryption
@@ -301,7 +301,7 @@ Score > 90: Temporary block + admin alert
 
 ###​ Multi-Tenant/Lab Management
 
-#### ✅ Lab Operations
+#### Lab Operations
 - Create labs (admin only)
 - List all labs
 - Get lab details
@@ -309,14 +309,14 @@ Score > 90: Temporary block + admin alert
 - Delete labs (admin only)
 - Activate/deactivate labs
 
-#### ✅ Lab Membership
+####  Lab Membership
 - Add users to labs
 - Remove users from labs
 - Update user roles in labs
 - List lab members
 - List user's labs
 
-#### ✅ Role-Based Access Control (RBAC)
+####  Role-Based Access Control (RBAC)
 
 **System-Level Roles:**
 - **System Admin** (`is_admin = True`) - Full system access
@@ -481,7 +481,7 @@ Response:
 
 ### Email Notifications
 
-#### ✅ Automated Emails
+####  Automated Emails
 - **Welcome Email** - Sent on registration
 - **Password Reset Email** - With secure reset link
 - **Password Changed** - Confirmation notification
@@ -490,14 +490,14 @@ Response:
 - **Account Locked** - Alert when account is locked
 - **Login Alert** - Notification of new login (optional)
 
-#### ✅ Email Templates
+####  Email Templates
 - HTML email templates
 - All emails include relevant user information
 - Secure token links with expiration
 
 ### Audit & Logging
 
-#### ✅ Audit Trail
+####  Audit Trail
 - **Complete audit logging** for all actions:
   - User registration
   - Login/logout (successful and failed)
@@ -509,7 +509,7 @@ Response:
   - Member add/remove
   - Role updates
 
-#### ✅ Audit Log Features
+####  Audit Log Features
 - User ID tracking
 - IP address logging
 - User agent logging
@@ -518,7 +518,7 @@ Response:
 - Additional details (JSON)
 - Resource type and ID tracking
 
-#### ✅ Login Attempt Tracking
+####  Login Attempt Tracking
 - Username
 - IP address
 - Success/failure
@@ -527,7 +527,7 @@ Response:
 
 ### Data Management
 
-#### ✅ User Profile
+####  User Profile
 - Username (unique)
 - Email (unique)
 - First name / Last name
@@ -541,7 +541,7 @@ Response:
 - 2FA fields (ready for implementation)
 - Timestamps (created, updated)
 
-#### ✅ Token Management
+####  Token Management
 - **Password Reset Tokens**
   - Secure random tokens
   - Expiration (24 hours default)
@@ -587,7 +587,7 @@ Response:
 
 ### Database Schema
 
-#### ✅ 7 Tables
+####  7 Tables
 1. **users** - User accounts and profiles
 2. **labs** - Laboratory/tenant entities
 3. **lab_memberships** - User-lab relationships with roles
@@ -598,7 +598,7 @@ Response:
 
 ### Security Features
 
-#### ✅ Implemented
+####  Implemented
 - Password hashing (PBKDF2-SHA256)
 - JWT token authentication
 - Token expiration (1 hour access, 30 days refresh)
@@ -621,14 +621,14 @@ Response:
 
 ### Email Configuration
 
-#### ✅ Supported Email Providers
+####  Supported Email Providers
 - Gmail (SMTP)
 - SendGrid
 - Mailgun
 - Amazon SES
 - Any SMTP server
 
-#### ✅ Email Settings
+####  Email Settings
 - Configurable via environment variables
 - TLS/SSL support
 - Custom sender address
@@ -636,7 +636,7 @@ Response:
 
 ### Developer Features
 
-#### ✅ Code Quality
+####  Code Quality
 - Clean architecture (blueprints, models, schemas, utils)
 - Comprehensive error handling
 - Logging throughout
@@ -644,13 +644,13 @@ Response:
 - Docstrings for all functions
 - Modular design
 
-#### ✅ Testing Ready
+####  Testing Ready
 - Test database configuration
 - Pytest integration
 - Flask-Testing support
 - Mocking-friendly design
 
-#### ✅ Django Integration
+####  Django Integration
 - UMSClient class provided
 - Request/response examples
 - Session management examples

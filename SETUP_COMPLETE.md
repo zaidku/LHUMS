@@ -1,8 +1,8 @@
-# Flask User Management Service (UMS) - Setup Complete! 🎉
+# User Management Service (UMS) 
 
 ## What Has Been Created
 
-Your Flask User Management Service is now fully set up and ready to use! Here's what you have:
+User Management Service is fully set up and ready to use!
 
 ### ✅ Complete Project Structure
 
@@ -262,4 +262,3 @@ The UMS is fully functional and ready for integration with your Django webapp po
 
 ---
 
-**You're all set!** 🎉 Start the server and begin integrating with your Django webapp portal.

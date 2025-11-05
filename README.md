@@ -649,6 +649,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made for LinksHub  Portal**
+**Made for LinksHub Portal**
 
-**Version 1.0** | **Released: November 5, 2025** | **[GitHub](https://github.com/zaidku/LHUMS)**
+**Version 1.0** | **Released: November 1, 2025** | **[GitHub](https://github.com/zaidku/LHUMS)**
