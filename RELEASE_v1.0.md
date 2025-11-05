@@ -1,4 +1,4 @@
-# 🎉 Flask UMS v1.0 Successfully Released!
+# UMS v1.3!
 
 ## ✅ Repository
 **GitHub**: https://github.com/zaidku/LHUMS
