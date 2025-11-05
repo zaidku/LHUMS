@@ -226,7 +226,7 @@ User Management Service v1.0 is:
 
 ---
 
-**Made with ❤️ for LinksHub Django Portal**
-**Version 1.0** | **Released: November 5, 2025**
+**Made for LinksHub Portal**
+**Version 1.3** | **Released: November 1, 2025**
 
-🎉 **Congratulations! Your UMS is live on GitHub!** 🎉
+
