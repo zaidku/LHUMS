@@ -2,7 +2,7 @@
 
 ## What Has Been Created
 
-Your Flask User Management Service is now fully set up and ready to use! Here's what you have:
+User Management Service is fully set up and ready to use!
 
 ### ✅ Complete Project Structure
 
