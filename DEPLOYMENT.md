@@ -2,7 +2,7 @@
 ##  Deployment Summary
 
 **Repository**: https://github.com/zaidku/LHUMS
-**Version**: 1.0
+**Version**: 1.3
 **Status**: Live and Production-Ready
 
 ##  What Was Pushed
