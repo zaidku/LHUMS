@@ -310,4 +310,4 @@ See `.env.example` for all configuration options:
 
 ---
 
-**Your UMS now has ENTERPRISE-LEVEL features! 🎉**
+
