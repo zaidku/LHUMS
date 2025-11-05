@@ -7,7 +7,7 @@ A production-ready, HIPAA-compliant User Management Service built with Flask to 
 [![Flask](https://img.shields.io/badge/flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🚀 Key Features
+##  Key Features
 
 ### Authentication & Security
 - ✅ **JWT-based Authentication** - Secure access & refresh tokens
@@ -21,7 +21,9 @@ A production-ready, HIPAA-compliant User Management Service built with Flask to 
 - ✅ **Lab-Based Tenancy** - Each lab is an isolated tenant
 - ✅ **Data Isolation** - Row-level security preventing cross-lab access
 - ✅ **Role-Based Access Control** - System admin, lab admin, member, viewer
+- ✅ **Attribute-Based Authorization** - Fine-grained permissions (lab.patient.read, lab.reports.write)
 - ✅ **Flexible Memberships** - Users can belong to multiple labs
+- ✅ **Authorization Forwarding** - Other services can validate user permissions
 
 ### Enterprise Features
 - ✅ **Audit Logging** - Complete trail of all user actions
@@ -98,7 +100,7 @@ Server runs at: `http://localhost:5000`
 python test_api.py
 ```
 
-## 💾 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.8+ (tested on 3.13)
@@ -269,6 +271,58 @@ def list_patients(lab_id):
 - **Lab Admin** - Manage lab members and settings
 - **Member** - Full access to lab data
 - **Viewer** - Read-only access
+
+#### 5. Attribute-Based Authorization
+
+Beyond simple roles, the system supports **fine-grained permissions** through attributes:
+
+**Attribute Format:**
+```
+category.resource.action
+
+Examples:
+- lab.patient.read
+- lab.patient.write
+- lab.reports.export
+- lab.samples.track
+```
+
+**How It Works:**
+1. **Role-Based Attributes** - Each role gets default attributes
+2. **User-Specific Grants** - Lab owners can grant specific permissions
+3. **Temporary Access** - Attributes can have expiration dates
+
+**Usage Example:**
+```python
+from app.utils.attribute_decorators import require_attributes
+
+@app.route('/labs/<int:lab_id>/patients/export')
+@jwt_required()
+@require_attributes(['lab.patient.export'], lab_id_param='lab_id')
+def export_patients(lab_id):
+    # User must have lab.patient.export attribute
+    pass
+```
+
+**Authorization Forwarding for Other Services:**
+```python
+# Django service checks user permissions via UMS
+POST /api/auth/authorize
+{
+  "user_id": 123,
+  "lab_id": 5,
+  "required_attributes": ["lab.patient.read", "lab.reports.view"]
+}
+
+Response:
+{
+  "has_access": true,
+  "granted_attributes": ["lab.patient.read", "lab.reports.view"],
+  "missing_attributes": []
+}
+```
+
+For complete attribute system documentation, see [FEATURES.md](FEATURES.md#-attribute-based-authorization)
 
 ### Access Control Decorators
 
@@ -595,6 +649,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made with ❤️ for LinksHub Django Portal**
+**Made for LinksHub  Portal**
 
 **Version 1.0** | **Released: November 5, 2025** | **[GitHub](https://github.com/zaidku/LHUMS)**

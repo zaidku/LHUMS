@@ -6,58 +6,68 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Django Web Application                             │
-│                     (Multiple Labs - LinksHub Portal)                        │
+│                           Django Web Application                            │
+│                     (Multiple Labs - LinksHub Portal)                       │
 └────────────────────────────────┬────────────────────────────────────────────┘
                │ HTTPS/REST API
                │ JWT Bearer Token
                ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        UMS - User Management Service                         │
-│                                                                               │
-│  ┌─────────────────┐  ┌──────────────────┐  ┌─────────────────────────┐   │
-│  │   API Gateway   │  │  Auth Middleware │  │  Rate Limiter (Future)  │   │
-│  │   (Flask)       │  │  (JWT Validate)  │  │  (1000 req/min/user)    │   │
-│  └────────┬────────┘  └─────────┬────────┘  └───────────┬─────────────┘   │
+│                        UMS - User Management Service                        │
+│                                                                             │
+│  ┌─────────────────┐  ┌──────────────────┐  ┌─────────────────────────┐     │
+│  │   API Gateway   │  │  Auth Middleware │  │  Rate Limiter (Future)  │     │
+│  │   (Flask)       │  │  (JWT Validate)  │  │  (1000 req/min/user)    │     │
+│  └────────┬────────┘  └─────────┬────────┘  └───────────┬─────────────┘     │
 │           │                     │                        │                  │
 │           ▼                     ▼                        ▼                  │
-│  ┌────────────────────────────────────────────────────────────────────┐    │
-│  │                     Business Logic Layer                            │    │
-│  │  ┌─────────────┐  ┌────────────────┐  ┌──────────────────────┐   │    │
-│  │  │ Auth Routes │  │  User Routes   │  │    Lab Routes        │   │    │
-│  │  │ /api/auth/* │  │  /api/users/*  │  │    /api/labs/*       │   │    │
-│  │  └─────────────┘  └────────────────┘  └──────────────────────┘   │    │
-│  └────────────────────────────────────────────────────────────────────┘    │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                     Business Logic Layer                           │     │
+│  │  ┌─────────────┐  ┌────────────────┐  ┌──────────────────────┐     │     │
+│  │  │ Auth Routes │  │  User Routes   │  │    Lab Routes        │     │     │
+│  │  │ /api/auth/* │  │  /api/users/*  │  │    /api/labs/*       │     │     │
+│  │  │             │  │                │  │                      │     │     │
+│  │  │ /authorize  │  │                │  │  Attribute Routes    │     │     │
+│  │  │ /user-attr  │  │                │  │  /api/attributes/*   │     │     │
+│  │  └─────────────┘  └────────────────┘  └──────────────────────┘     │     │
+│  └────────────────────────────────────────────────────────────────────┘     │
 │           │                     │                        │                  │
 │           ▼                     ▼                        ▼                  │
-│  ┌────────────────────────────────────────────────────────────────────┐    │
-│  │                   Security & Validation Layer                       │    │
-│  │  ┌─────────────────┐  ┌──────────────┐  ┌────────────────────┐   │    │
-│  │  │ Tenant Context  │  │  RBAC Check  │  │  Anomaly Detection │   │    │
-│  │  │ Isolation       │  │  Decorators  │  │  (Brute Force)     │   │    │
-│  │  └─────────────────┘  └──────────────┘  └────────────────────┘   │    │
-│  └────────────────────────────────────────────────────────────────────┘    │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                   Security & Validation Layer                      │     │
+│  │  ┌─────────────────┐  ┌──────────────┐  ┌────────────────────┐     │     │
+│  │  │ Tenant Context  │  │  RBAC Check  │  │  Anomaly Detection │     │     │
+│  │  │ Isolation       │  │  Decorators  │  │  (Brute Force)     │     │     │
+│  │  │                 │  │              │  │                    │     │     │
+│  │  │                 │  │  Attribute-  │  │                    │     │     │
+│  │  │                 │  │  Based Auth  │  │                    │     │     │
+│  │  └─────────────────┘  └──────────────┘  └────────────────────┘     │     │
+│  └────────────────────────────────────────────────────────────────────┘     │
 │           │                     │                        │                  │
 │           ▼                     ▼                        ▼                  │
-│  ┌────────────────────────────────────────────────────────────────────┐    │
-│  │                      Data Access Layer                              │    │
-│  │               SQLAlchemy ORM + Connection Pool                      │    │
-│  └────────────────────────────────────────────────────────────────────┘    │
-│           │                                                                  │
-│           ▼                                                                  │
-│  ┌────────────────────────────────────────────────────────────────────┐    │
-│  │                    Audit & Notification Layer                       │    │
-│  │  ┌─────────────────┐                    ┌─────────────────────┐   │    │
-│  │  │  Audit Logger   │                    │  Email Service      │   │    │
-│  │  │  (Async Queue)  │                    │  (SMTP/SendGrid)    │   │    │
-│  │  └─────────────────┘                    └─────────────────────┘   │    │
-│  └────────────────────────────────────────────────────────────────────┘    │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                      Data Access Layer                             │     │
+│  │               SQLAlchemy ORM + Connection Pool                     │     │
+│  │                                                                    │     │
+│  │     Tables: users, labs, lab_membership, attributes,              │     │
+│  │            role_attributes, user_lab_attributes                   │     │
+│  └────────────────────────────────────────────────────────────────────┘     │
+│           │                                                                 │
+│           ▼                                                                 │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                    Audit & Notification Layer                      │     │
+│  │  ┌─────────────────┐                    ┌─────────────────────┐    │     │
+│  │  │  Audit Logger   │                    │  Email Service      │    │     │
+│  │  │  (Async Queue)  │                    │  (SMTP/SendGrid)    │    │     │
+│  │  └─────────────────┘                    └─────────────────────┘    │     │
+│  └────────────────────────────────────────────────────────────────────┘     │
 └───────────────────────────────┬─────────────────────────────────────────────┘
-              │
-              ▼
+                                │
+                                ▼
+
      ┌───────────────────────────────────────────────┐
      │         PostgreSQL Database Cluster           │
-     │  ┌──────────────┐      ┌──────────────┐      │
+     │  ┌──────────────┐      ┌──────────────┐       │
      │  │   Primary    │─────▶│   Replica    │      │
      │  │  (Write/Read)│      │  (Read Only) │      │
      │  └──────────────┘      └──────────────┘      │
@@ -320,6 +330,154 @@ Score > 90: Temporary block + admin alert
 **Permission Decorators:**
 - `@admin_required` - Requires system admin
 - `@lab_admin_required` - Requires lab admin or system admin
+
+#### ✅ Attribute-Based Authorization
+
+**Fine-Grained Permission Control:**
+
+The system supports attribute-based authorization for granular permission control beyond simple roles. Lab owners can assign specific permissions to users.
+
+**Attribute Categories:**
+- **Lab Attributes** - Lab-specific permissions (lab.patient.read, lab.reports.write)
+- **System Attributes** - System-wide permissions (system.admin.full, system.labs.manage)
+
+**Attribute Naming Convention:**
+```
+category.resource.action
+Examples:
+  - lab.patient.read
+  - lab.patient.write
+  - lab.patient.delete
+  - lab.reports.create
+  - lab.samples.track
+  - system.admin.full
+```
+
+**Attribute Assignment Methods:**
+
+1. **Role-Based Attributes** - Default attributes for each role
+   - Admin role: Full lab permissions (admin, read, write, delete, export)
+   - Member role: Standard permissions (read, write)
+   - Viewer role: Read-only permissions
+
+2. **User-Specific Attributes** - Individual grants to users
+   - Lab owners can grant specific permissions to users
+   - Supports expiration dates for temporary permissions
+   - Can be revoked at any time
+
+3. **System Admin Attributes** - System administrators get all permissions
+
+**API Endpoints:**
+- `POST /api/attributes` - Create new attribute
+- `GET /api/attributes` - List all attributes
+- `POST /api/attributes/roles` - Assign attribute to role
+- `POST /api/attributes/users` - Grant attribute to specific user
+- `DELETE /api/attributes/users/:id` - Revoke user attribute
+- `POST /api/auth/authorize` - Check user authorization
+- `POST /api/auth/user-attributes` - Get all user attributes for a lab
+
+**Permission Decorators:**
+```python
+@require_attributes(['lab.patient.read', 'lab.reports.view'])
+@require_any_attributes(['lab.admin.manage', 'lab.reports.create'])
+@require_lab_admin()
+@require_lab_member()
+```
+
+**Authorization Forwarding:**
+
+Other services can check user permissions by calling:
+```python
+POST /api/auth/authorize
+{
+  "user_id": 123,
+  "lab_id": 5,
+  "required_attributes": ["lab.patient.read", "lab.reports.view"]
+}
+
+Response:
+{
+  "user_id": 123,
+  "lab_id": 5,
+  "has_access": true,
+  "granted_attributes": ["lab.patient.read", "lab.reports.view"],
+  "missing_attributes": [],
+  "all_user_attributes": ["lab.patient.read", "lab.patient.write", "lab.reports.view", ...]
+}
+```
+
+**Pre-configured Attributes:**
+
+*Lab Management:*
+- lab.admin.manage - Full lab administration
+- lab.settings.edit - Edit lab configuration
+- lab.users.invite - Invite new users
+- lab.users.remove - Remove users
+- lab.roles.assign - Assign roles to members
+
+*Patient Data:*
+- lab.patient.read - View patient information
+- lab.patient.write - Create/edit patient records
+- lab.patient.delete - Delete patient records
+- lab.patient.export - Export patient data
+
+*Reports & Analytics:*
+- lab.reports.view - View reports
+- lab.reports.create - Create reports
+- lab.reports.export - Export reports
+- lab.reports.schedule - Schedule automated reports
+
+*Sample Management:*
+- lab.samples.read - View sample information
+- lab.samples.write - Create/edit samples
+- lab.samples.track - Track sample status
+- lab.samples.dispose - Dispose samples
+
+*Equipment:*
+- lab.equipment.view - View equipment status
+- lab.equipment.reserve - Reserve equipment
+- lab.equipment.maintain - Maintenance operations
+
+*Analysis:*
+- lab.analysis.run - Execute analysis workflows
+- lab.analysis.results - View analysis results
+- lab.analysis.configure - Configure analysis parameters
+
+*Quality Control:*
+- lab.qc.view - View QC data
+- lab.qc.perform - Conduct QC procedures
+- lab.qc.approve - Approve QC results
+
+*Billing & Finance:*
+- lab.billing.view - View billing information
+- lab.billing.manage - Manage billing records
+- lab.costs.track - Monitor lab costs
+
+*Compliance & Audit:*
+- lab.audit.view - View audit logs
+- lab.audit.export - Export audit data
+- lab.compliance.manage - Handle compliance requirements
+
+**Use Cases:**
+
+1. **Temporary Research Collaboration:**
+   - Grant `lab.patient.read` to visiting researcher
+   - Set expiration date for 30 days
+   - Automatically revoked after expiration
+
+2. **Limited Data Export Access:**
+   - Grant `lab.patient.export` to specific user
+   - While maintaining their standard member role
+   - Can be revoked immediately if needed
+
+3. **Quality Control Specialist:**
+   - Grant `lab.qc.approve` permission
+   - User can approve QC without full admin access
+
+4. **Service Integration:**
+   - Django services call `/api/auth/authorize`
+   - UMS returns user's permissions for the lab
+   - Service makes authorization decisions based on attributes
 
 ### Email Notifications
 

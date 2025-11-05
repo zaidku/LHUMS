@@ -436,3 +436,181 @@ def password_status():
         return jsonify({'error': str(e)}), 500
 
 
+@auth_bp.route('/authorize', methods=['POST'])
+@jwt_required()
+def authorize():
+    """Check user authorization and return attributes.
+    
+    This endpoint is used by other services to verify user permissions
+    and get their attributes for a specific lab.
+    """
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        user_id = data.get('user_id')
+        lab_id = data.get('lab_id')
+        required_attributes = data.get('required_attributes', [])
+        
+        if not user_id or not lab_id:
+            return jsonify({'error': 'user_id and lab_id are required'}), 400
+        
+        # Verify the requesting user has permission to check authorization
+        current_user_id = get_jwt_identity()
+        current_user = User.query.get(current_user_id)
+        
+        # Only allow checking own authorization or if user is admin
+        if current_user_id != user_id and not current_user.is_admin:
+            return jsonify({'error': 'Insufficient permissions to check authorization for other users'}), 403
+        
+        # Get user
+        user = User.query.get(user_id)
+        if not user or not user.is_active:
+            return jsonify({'error': 'User not found or inactive'}), 404
+        
+        # Get user attributes for this lab
+        user_attributes = get_user_attributes(user_id, lab_id)
+        
+        # Check which required attributes the user has
+        granted_attributes = [attr for attr in required_attributes if attr in user_attributes]
+        missing_attributes = [attr for attr in required_attributes if attr not in user_attributes]
+        
+        # Get lab membership info
+        from app.models.lab import Lab
+        lab = Lab.query.get(lab_id)
+        
+        if not lab:
+            return jsonify({'error': 'Lab not found'}), 404
+        
+        response_data = {
+            'user_id': user_id,
+            'lab_id': lab_id,
+            'lab_name': lab.name,
+            'has_access': len(missing_attributes) == 0,
+            'granted_attributes': granted_attributes,
+            'missing_attributes': missing_attributes,
+            'all_user_attributes': user_attributes,
+            'is_system_admin': user.is_admin
+        }
+        
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@auth_bp.route('/user-attributes', methods=['POST'])
+@jwt_required()
+def get_user_attributes_endpoint():
+    """Get all attributes for a user in a specific lab.
+    
+    This is used by other services to get the complete list
+    of attributes for authorization decisions.
+    """
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        lab_id = data.get('lab_id')
+        
+        if not user_id or not lab_id:
+            return jsonify({'error': 'user_id and lab_id are required'}), 400
+        
+        # Verify the requesting user has permission
+        current_user_id = get_jwt_identity()
+        current_user = User.query.get(current_user_id)
+        
+        # Only allow getting own attributes or if user is admin
+        if current_user_id != user_id and not current_user.is_admin:
+            return jsonify({'error': 'Insufficient permissions'}), 403
+        
+        # Get user and lab info
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        from app.models.lab import Lab
+        lab = Lab.query.get(lab_id)
+        if not lab:
+            return jsonify({'error': 'Lab not found'}), 404
+        
+        # Get all user attributes
+        attributes = get_user_attributes(user_id, lab_id)
+        
+        response_data = {
+            'user_id': user_id,
+            'username': user.username,
+            'lab_id': lab_id,
+            'lab_name': lab.name,
+            'lab_code': lab.code,
+            'attributes': attributes,
+            'is_admin': user.is_admin
+        }
+        
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def get_user_attributes(user_id, lab_id):
+    """Get all attributes for a user in a specific lab.
+    
+    This combines:
+    1. Role-based attributes (from their role in the lab)
+    2. Direct user attributes (specifically granted)
+    3. System admin attributes (if applicable)
+    """
+    try:
+        from app.models.attribute import Attribute, RoleAttribute, UserLabAttribute
+        from app.models.lab import LabMembership
+        
+        user = User.query.get(user_id)
+        if not user:
+            return []
+        
+        attributes = set()
+        
+        # If system admin, get all lab attributes
+        if user.is_admin:
+            lab_attrs = Attribute.query.filter_by(category='lab', is_active=True).all()
+            system_attrs = Attribute.query.filter_by(category='system', is_active=True).all()
+            attributes.update([attr.name for attr in lab_attrs + system_attrs])
+            return list(attributes)
+        
+        # Get user's role in this lab
+        membership = LabMembership.query.filter_by(
+            user_id=user_id,
+            lab_id=lab_id,
+            is_active=True
+        ).first()
+        
+        if not membership:
+            return []
+        
+        # Get role-based attributes for this lab
+        role_attributes = RoleAttribute.query.filter(
+            (RoleAttribute.role_name == membership.role) &
+            ((RoleAttribute.lab_id == lab_id) | (RoleAttribute.lab_id.is_(None)))
+        ).join(Attribute).filter(Attribute.is_active == True).all()
+        
+        for ra in role_attributes:
+            attributes.add(ra.attribute.name)
+        
+        # Get direct user-specific attributes for this lab
+        user_attributes = UserLabAttribute.query.filter_by(
+            user_id=user_id,
+            lab_id=lab_id,
+            is_active=True
+        ).join(Attribute).filter(Attribute.is_active == True).all()
+        
+        for ua in user_attributes:
+            if ua.is_valid():  # Check if not expired
+                attributes.add(ua.attribute.name)
+        
+        return list(attributes)
+        
+    except Exception as e:
+        # Return empty list on error - this ensures graceful degradation
+        return []
+
+

@@ -14,6 +14,18 @@ from app.schemas.lab_schema import (
     lab_memberships_schema,
     add_member_schema
 )
+from app.schemas.attribute_schema import (
+    attribute_schema,
+    attributes_schema,
+    role_attribute_schema,
+    user_lab_attribute_schema,
+    user_attributes_response_schema,
+    attribute_check_request_schema,
+    attribute_check_response_schema,
+    AttributeSchema,
+    RoleAttributeSchema,
+    UserLabAttributeSchema
+)
 
 __all__ = [
     'user_schema',
@@ -26,5 +38,15 @@ __all__ = [
     'lab_create_schema',
     'lab_membership_schema',
     'lab_memberships_schema',
-    'add_member_schema'
+    'add_member_schema',
+    'attribute_schema',
+    'attributes_schema',
+    'role_attribute_schema',
+    'user_lab_attribute_schema',
+    'user_attributes_response_schema',
+    'attribute_check_request_schema',
+    'attribute_check_response_schema',
+    'AttributeSchema',
+    'RoleAttributeSchema',
+    'UserLabAttributeSchema'
 ]
